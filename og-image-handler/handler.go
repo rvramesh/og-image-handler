@@ -7,22 +7,18 @@ import (
 	"net/http"
 	"strconv"
 
+	"net/url"
+
 	"github.com/fogleman/gg"
 	handler "github.com/openfaas/templates-sdk/go-http"
-	"github.com/pasztorpisti/qs"
 )
-
-type Query struct {
-	title string
-	// sig   string
-}
 
 // Handle a function invocation
 func Handle(req handler.Request) (handler.Response, error) {
 
-	q := parseQueryString(req)
-	log.Print(req)
-	log.Println("Req printed")
+	q := parseQueryString(req.QueryString)
+	title := q.Get("title")
+	log.Printf("%s", title)
 	//	h := hmac.New(sha512.New, []byte("2r5u8x/A?D*G-KaPdSgVkYp3s6v9y$B&E)H+MbQeThWmZq4t7w!z%C*F-JaNcRfU"))
 
 	// Write Data to it
@@ -38,7 +34,7 @@ func Handle(req handler.Request) (handler.Response, error) {
 	// 	}, nil
 	// }
 
-	buffer := getOgImage("template2.jpg", "Hello World").Bytes()
+	buffer := getOgImage("template2.jpg", title).Bytes()
 	log.Println("Done getting buffer")
 	return handler.Response{
 		Body: buffer,
@@ -51,10 +47,8 @@ func Handle(req handler.Request) (handler.Response, error) {
 	}, nil
 }
 
-func parseQueryString(req handler.Request) Query {
-	var q Query
-	log.Println(req.QueryString)
-	err := qs.Unmarshal(&q, req.QueryString)
+func parseQueryString(s string) url.Values {
+	q, err := url.ParseQuery(s)
 	if err != nil {
 		panic(err)
 	}
