@@ -68,11 +68,7 @@ func getOgImage(templateLocation string, title string) *bytes.Buffer {
 		panic(err)
 	}
 	log.Println("Loaded Image")
-	maxBounds := backgroundImage.Bounds().Max
-	log.Println("Found Max")
-	dc := gg.NewContext(maxBounds.X, maxBounds.Y)
-	log.Println("Created Context")
-	dc.DrawImage(backgroundImage, 0, 0)
+	dc := gg.NewContextForImage(backgroundImage)
 	log.Println("Drew Image")
 	if err := dc.LoadFontFace("SourceSans3-Regular.ttf", 48); err != nil {
 		panic(err)
