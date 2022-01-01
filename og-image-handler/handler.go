@@ -62,11 +62,12 @@ func parseQueryString(req handler.Request) Query {
 
 func getOgImage(templateLocation string, title string) *bytes.Buffer {
 
+	log.Println("Starting image processing")
 	backgroundImage, err := gg.LoadImage(templateLocation)
 	if err != nil {
 		panic(err)
 	}
-
+	log.Println("Loaded Image")
 	maxBounds := backgroundImage.Bounds().Max
 	dc := gg.NewContext(maxBounds.X, maxBounds.Y)
 	dc.DrawImage(backgroundImage, 0, 0)
@@ -81,5 +82,6 @@ func getOgImage(templateLocation string, title string) *bytes.Buffer {
 	if err := jpeg.Encode(buffer, img, nil); err != nil {
 		panic(err)
 	}
+	log.Println("Done image processing")
 	return buffer
 }
