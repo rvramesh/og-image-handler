@@ -7,9 +7,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"crypto/hmac"
-	"crypto/sha512"
-
 	"github.com/fogleman/gg"
 	handler "github.com/openfaas/templates-sdk/go-http"
 	"github.com/pasztorpisti/qs"
@@ -24,11 +21,11 @@ type Query struct {
 func Handle(req handler.Request) (handler.Response, error) {
 
 	q := parseQueryString(req)
-	fmt.Printf("%+v\n", q)
-	h := hmac.New(sha512.New, []byte("2r5u8x/A?D*G-KaPdSgVkYp3s6v9y$B&E)H+MbQeThWmZq4t7w!z%C*F-JaNcRfU"))
+	fmt.Printf("Struct %+v\n", q)
+	//	h := hmac.New(sha512.New, []byte("2r5u8x/A?D*G-KaPdSgVkYp3s6v9y$B&E)H+MbQeThWmZq4t7w!z%C*F-JaNcRfU"))
 
 	// Write Data to it
-	h.Write([]byte(q.title))
+	//	h.Write([]byte(q.title))
 
 	// titleHash := base64.StdEncoding.EncodeToString(h.Sum(nil))
 	// if titleHash != q.sig {
@@ -40,7 +37,7 @@ func Handle(req handler.Request) (handler.Response, error) {
 	// 	}, nil
 	// }
 
-	buffer, err := getOgImage("template2.jpg", q.title)
+	buffer := getOgImage("template2.jpg", q.title)
 
 	return handler.Response{
 		Body: buffer.Bytes(),
@@ -50,11 +47,12 @@ func Handle(req handler.Request) (handler.Response, error) {
 			"Content-Length": {strconv.Itoa(len(buffer.Bytes()))},
 		},
 		StatusCode: http.StatusOK,
-	}, err
+	}, nil
 }
 
 func parseQueryString(req handler.Request) Query {
 	var q Query
+	fmt.Printf("Query String : %s\n", req.QueryString)
 	err := qs.Unmarshal(&q, req.QueryString)
 	if err != nil {
 		panic(err)
@@ -62,8 +60,7 @@ func parseQueryString(req handler.Request) Query {
 	return q
 }
 
-func getOgImage(templateLocation string, title string) (*bytes.Buffer, error) {
-	var err error
+func getOgImage(templateLocation string, title string) *bytes.Buffer {
 
 	backgroundImage, err := gg.LoadImage(templateLocation)
 	if err != nil {
@@ -84,5 +81,5 @@ func getOgImage(templateLocation string, title string) (*bytes.Buffer, error) {
 	if err := jpeg.Encode(buffer, img, nil); err != nil {
 		panic(err)
 	}
-	return buffer, nil
+	return buffer
 }
