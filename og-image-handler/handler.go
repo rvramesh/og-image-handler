@@ -39,7 +39,7 @@ func Handle(req handler.Request) (handler.Response, error) {
 	// 	}, nil
 	// }
 
-	buffer, err := getOgImage("../template2.jpg", q.title)
+	buffer, err := getOgImage("template2.jpg", q.title)
 
 	return handler.Response{
 		Body: buffer.Bytes(),
@@ -72,7 +72,7 @@ func getOgImage(templateLocation string, title string) (*bytes.Buffer, error) {
 	maxBounds := backgroundImage.Bounds().Max
 	dc := gg.NewContext(maxBounds.X, maxBounds.Y)
 	dc.DrawImage(backgroundImage, 0, 0)
-	if err := dc.LoadFontFace("../SourceSans3-Regular.ttf", 48); err != nil {
+	if err := dc.LoadFontFace("SourceSans3-Regular.ttf", 48); err != nil {
 		panic(err)
 	}
 	dc.SetRGB(1, 1, 1)
