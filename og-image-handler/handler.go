@@ -37,7 +37,7 @@ func Handle(req handler.Request) (handler.Response, error) {
 	// 	}, nil
 	// }
 
-	buffer := getOgImage("template2.jpg", q.title)
+	buffer := getOgImage("template2.jpg", "Hello World")
 
 	return handler.Response{
 		Body: buffer.Bytes(),
