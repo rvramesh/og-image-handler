@@ -1,4 +1,4 @@
-module github.com/rvramesh/og-image-handler
+module github.com/rvramesh/og-image-handler/og-image-handler
 
 go 1.17
 
