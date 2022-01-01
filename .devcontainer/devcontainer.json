@@ -2,6 +2,7 @@
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.209.6/containers/go
 {
 	"name": "Go",
+	
 	"build": {
 		"dockerfile": "Dockerfile",
 		"args": {
@@ -35,5 +36,7 @@
 	// "postCreateCommand": "go version",
 
 	// Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
-	"remoteUser": "vscode"
+	"remoteUser": "vscode",
+	"workspaceMount": "source=${localWorkspaceFolder},target=/go/src/og-image-handler,type=bind,consistency=cached", 
+	"workspaceFolder": "/go/src/og-image-handler"
 }
