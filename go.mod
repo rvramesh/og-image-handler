@@ -1,4 +1,4 @@
-module github.com/rvramesh/og-image-handler/og-image-handler
+module github.com/rvramesh/og-image-handler
 
 go 1.17
 
@@ -9,6 +9,5 @@ require (
 
 require (
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
-	github.com/pasztorpisti/qs v0.0.0-20171216220353-8d6c33ee906c
 	golang.org/x/image v0.0.0-20211028202545-6944b10bf410 // indirect
 )
