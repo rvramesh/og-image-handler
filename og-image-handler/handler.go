@@ -2,6 +2,7 @@ package function
 
 import (
 	"bytes"
+	"fmt"
 	"image/jpeg"
 	"net/http"
 	"strconv"
@@ -23,7 +24,7 @@ type Query struct {
 func Handle(req handler.Request) (handler.Response, error) {
 
 	q := parseQueryString(req)
-
+	fmt.Printf("%+v\n", q)
 	h := hmac.New(sha512.New, []byte("2r5u8x/A?D*G-KaPdSgVkYp3s6v9y$B&E)H+MbQeThWmZq4t7w!z%C*F-JaNcRfU"))
 
 	// Write Data to it
