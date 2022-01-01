@@ -2,8 +2,8 @@ package function
 
 import (
 	"bytes"
-	"fmt"
 	"image/jpeg"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -21,7 +21,7 @@ type Query struct {
 func Handle(req handler.Request) (handler.Response, error) {
 
 	q := parseQueryString(req)
-	fmt.Printf("Struct %+v\n", q)
+	log.Print(q)
 	//	h := hmac.New(sha512.New, []byte("2r5u8x/A?D*G-KaPdSgVkYp3s6v9y$B&E)H+MbQeThWmZq4t7w!z%C*F-JaNcRfU"))
 
 	// Write Data to it
@@ -37,14 +37,14 @@ func Handle(req handler.Request) (handler.Response, error) {
 	// 	}, nil
 	// }
 
-	buffer := getOgImage("template2.jpg", "Hello World")
-
+	buffer := getOgImage("template2.jpg", "Hello World").Bytes()
+	log.Println("Done getting buffer")
 	return handler.Response{
-		Body: buffer.Bytes(),
+		Body: buffer,
 		Header: map[string][]string{
 			"X-Served-By":    {"pico3"},
 			"Content-Type":   {"image/jpeg"},
-			"Content-Length": {strconv.Itoa(len(buffer.Bytes()))},
+			"Content-Length": {strconv.Itoa(len(buffer))},
 		},
 		StatusCode: http.StatusOK,
 	}, nil
@@ -52,7 +52,7 @@ func Handle(req handler.Request) (handler.Response, error) {
 
 func parseQueryString(req handler.Request) Query {
 	var q Query
-	fmt.Printf("Query String : %s\n", req.QueryString)
+	log.Println(req.QueryString)
 	err := qs.Unmarshal(&q, req.QueryString)
 	if err != nil {
 		panic(err)
