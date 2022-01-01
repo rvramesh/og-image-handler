@@ -71,14 +71,18 @@ func getOgImage(templateLocation string, title string) *bytes.Buffer {
 	maxBounds := backgroundImage.Bounds().Max
 	dc := gg.NewContext(maxBounds.X, maxBounds.Y)
 	dc.DrawImage(backgroundImage, 0, 0)
+	log.Println("Drew Image")
 	if err := dc.LoadFontFace("SourceSans3-Regular.ttf", 48); err != nil {
 		panic(err)
 	}
+	log.Println("Loaded Font")
 	dc.SetRGB(1, 1, 1)
 
 	dc.DrawStringWrapped(title, 80, 493, 0, 1, 1026, 1.25, gg.AlignLeft)
+	log.Println("Wrote String")
 	buffer := new(bytes.Buffer)
 	img := dc.Image()
+	log.Println("Converted to image")
 	if err := jpeg.Encode(buffer, img, nil); err != nil {
 		panic(err)
 	}
