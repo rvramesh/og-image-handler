@@ -6,5 +6,8 @@ functions:
   og-image-handler:
     lang: golang-http
     handler: ./og-image-handler
-    image: og-image-handler:latest
+    image: ghcr.io/rvramesh/og-image-handler:latest
+configuration:
+  templates:
+    - name : golang-http
 
