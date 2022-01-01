@@ -1,0 +1,96 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Then add the permissions for the GitHub token, so that the action can push to GHCR using its own temporary token.
+# This is more secure than generating your own personal access token which has access to your entire account, and may not expire
+permissions:
+  actions: read
+  checks: write
+  contents: read
+  packages: write
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+          
+      # Install faas-cli
+      - name: Get faas-cli
+        run: curl -sLSf https://cli.openfaas.com | sudo sh
+        
+      - name: Pull custom templates from stack.yml
+        run: faas-cli template pull stack
+      
+      # Set up Docker with buildx, so that it can cross-compile containers for different systems
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      
+      - name: Get TAG
+        id: get_tag
+        run: echo ::set-output name=TAG::latest-dev
+      
+      - name: Get Repo Owner
+        id: get_repo_owner
+        run: >
+          echo ::set-output name=repo_owner::$(echo ${{ github.repository_owner }} |
+          tr '[:upper:]' '[:lower:]')
+      
+      # Log into the ghcr.io registry using the GitHub token attached to the GitHub Action
+      - name: Docker Login
+        run: >
+          echo ${{secrets.GITHUB_TOKEN}} | 
+          docker login ghcr.io --username 
+          ${{ steps.get_repo_owner.outputs.repo_owner }} 
+          --password-stdin
+      
+      # Run faas-cli publish which builds and pushes a multi-arch image,
+      # linux/amd64 - regular PCs and cloud
+      # linux/arm/v7 - The 32-bit arm Raspberry Pi OS
+      # linux/arm64 - 64-bit arm servers or Ubuntu running on Raspberry Pi
+      - name: Publish functions
+        run: >
+          OWNER="${{ steps.get_repo_owner.outputs.repo_owner }}" 
+          TAG="latest"
+          faas-cli publish
+          --extra-tag ${{ github.sha }}
+          --build-arg GO111MODULE=on
+          --platforms linux/amd64,linux/arm/v7,linux/arm64
+      
+      # log into remote gateway 
+      - name: Login
+        run: >
+          echo ${{secrets.OPENFAAS_PASSWORD}} | 
+          faas-cli login --gateway ${{secrets.OPENFAAS_URL}} --password-stdin
+      
+      # deploy to remote gateway
+      - name: Deploy
+        run: >
+          OWNER="${{ steps.get_repo_owner.outputs.repo_owner }}"
+          TAG="${{ github.sha }}"
+          faas-cli deploy --gateway ${{secrets.OPENFAAS_URL}}
+          
