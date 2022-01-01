@@ -21,7 +21,8 @@ type Query struct {
 func Handle(req handler.Request) (handler.Response, error) {
 
 	q := parseQueryString(req)
-	log.Print(q)
+	log.Print(req)
+	log.Println("Req printed")
 	//	h := hmac.New(sha512.New, []byte("2r5u8x/A?D*G-KaPdSgVkYp3s6v9y$B&E)H+MbQeThWmZq4t7w!z%C*F-JaNcRfU"))
 
 	// Write Data to it
